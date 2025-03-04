@@ -38,34 +38,20 @@ class HandTracker:
         """Recognize hand gesture based on extended fingers."""
         gesture = "Unknown"
         if fingers == [0, 0, 0, 0, 0]:
-            gesture = "Fist"
+            gesture = "Stop"
+            self.midi.start_effect("reset_pitch")  # Reset to 0 semitones
         elif fingers == [1, 1, 1, 1, 1]:
-            gesture = "Open Palm"
+            gesture = "Five"
+            self.midi.start_effect("Fifth") # +7 semitones (major fifth)
+        elif fingers == [0, 1, 1, 1, 0]:
+            gesture = "Three"
+            self.midi.start_effect("Third")  # +4 semitones (major third)
         elif fingers == [0, 1, 0, 0, 0]:
-            gesture = "Point"
-        elif fingers == [0, 1, 1, 0, 0]:
-            gesture = "Peace"
+            gesture = "Octave"
+            self.midi.start_effect("Octave") # +12 semitones (octave)
         elif fingers == [0, 1, 0, 0, 1]:
-            gesture = "Rock"
-
-        # Only trigger effects on gesture changes
-        if gesture != self.current_gesture:
-            # Stop the current effect if any
-            if self.midi.active_effect:
-                self.midi.start_effect("stop_current_effect")
-
-            # Start the new effect based on the gesture
-            if gesture == "Open Palm":
-                self.midi.start_effect("reverb")
-            elif gesture == "Point":
-                self.midi.start_effect("volume")
-            elif gesture == "Peace":
-                self.midi.start_effect("delay")
-            elif gesture == "Rock":
-                # Reset all effects for Rock gesture
-                self.midi.start_effect("stop_current_effect")
-            
-            self.current_gesture = gesture
+            gesture = "Tritone"
+            self.midi.start_effect("Tritone") # +6 semitones (tritone)
 
         return gesture
 
@@ -75,32 +61,27 @@ class HandTracker:
         result = self.hands.process(rgb_frame)
 
         if result.multi_hand_landmarks:
-            hand_landmarks = result.multi_hand_landmarks[0]  # Take only the first detected hand
+            for hand_landmarks in result.multi_hand_landmarks:
+                # Get the bounding box coordinates for the hand (based on landmarks)
+                x_min = min([hand_landmarks.landmark[i].x for i in range(21)])
+                x_max = max([hand_landmarks.landmark[i].x for i in range(21)])
+                y_min = min([hand_landmarks.landmark[i].y for i in range(21)])
+                y_max = max([hand_landmarks.landmark[i].y for i in range(21)])
 
-            # Get bounding box coordinates
-            h, w, _ = frame.shape
-            x_min, y_min = w, h
-            x_max, y_max = 0, 0
+                # Convert normalized coordinates to pixel values (assuming frame is in BGR)
+                h, w, _ = frame.shape
+                x_min, x_max = int(x_min * w), int(x_max * w)
+                y_min, y_max = int(y_min * h), int(y_max * h)
 
-            for landmark in hand_landmarks.landmark:
-                x, y = int(landmark.x * w), int(landmark.y * h)
-                x_min, y_min = min(x_min, x), min(y_min, y)
-                x_max, y_max = max(x_max, x), max(y_max, y)
+                # Draw a square/rectangle around the hand
+                cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), (255, 0, 0), 2)
 
-            # Expand the box slightly for better visibility
-            padding = 20
-            x_min = max(0, x_min - padding)
-            y_min = max(0, y_min - padding)
-            x_max = min(w, x_max + padding)
-            y_max = min(h, y_max + padding)
+                # Get the finger states and recognize the gesture
+                fingers = self.get_finger_states(hand_landmarks)
+                gesture = self.recognize_gesture(fingers)
 
-            # Draw a single bounding box
-            cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), (255, 0, 0), 2)
-
-            # Place text above the box
-            fingers = self.get_finger_states(hand_landmarks)
-            gesture = self.recognize_gesture(fingers)
-            cv2.putText(frame, gesture, (x_min, y_min - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 0, 0), 2, cv2.LINE_AA)
+                # Display the gesture text on top of the square
+                cv2.putText(frame, gesture, (x_min, y_min - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
 
         return frame
 

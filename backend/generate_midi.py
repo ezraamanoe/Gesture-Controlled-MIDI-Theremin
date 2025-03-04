@@ -8,11 +8,19 @@ class GenerateMidi:
         self.available_ports = self.midiout.get_ports()
         
         if self.available_ports:
+            print("Available MIDI ports:")
+            for i, port in enumerate(self.available_ports):
+                print(f"{i}: {port}")
+            
+            # Open the first available port
             self.midiout.open_port(0)
+            print(f"Connected to MIDI port: {self.available_ports[0]}")
         else:
+            print("No MIDI ports found. Creating a virtual MIDI port.")
             self.midiout.open_virtual_port("Virtual MIDI")
-        
-        # Threading and state management for all effects
+            print("Virtual MIDI port created.")
+
+        # Threading and state management
         self.effect_lock = threading.Lock()
         self.active_effect = None  # Track the currently active effect
         self.effect_event = threading.Event()  # Signal to stop effects
@@ -26,9 +34,13 @@ class GenerateMidi:
         except Exception as e:
             print(f"MIDI Error: {e}")
 
-    def reset_effect(self, cc):
-        """Reset a specific effect to zero."""
-        self.send_midi_message(1, cc, 0)
+    def set_semitones(self, semitones):
+        """Set the semitones value in Logic Pro's Pitch Shifter."""
+        # Map semitones to MIDI CC value (0-127)
+        # Logic Pro's Pitch Shifter typically uses a range of -24 to +24 semitones
+        cc_value = int((semitones + 12) * (127 / 24))  # Map -24 to +24 semitones to 0-127
+        cc_value = max(0, min(127, cc_value))  # Clamp to valid MIDI range
+        self.send_midi_message(1, 20, cc_value)  # Use CC 20 (or the one you mapped)
 
     def stop_current_effect(self):
         """Stop the currently running effect and reset it to zero."""
@@ -42,66 +54,22 @@ class GenerateMidi:
                 self.active_effect = None
                 self.effect_event.clear()  # Reset the event for future use
 
-    def reverb(self):
-        """Gradually increase reverb effect."""
-        try:
-            for i in range(1, 127):
-                if self.effect_event.is_set():  # Check if the event is set to stop
-                    print("Reverb stopped by event.")
-                    break
-                self.send_midi_message(1, 91, i)
-                print(f"Reverb: {i}")
-                time.sleep(0.1)  # Reduced sleep time for faster response
-        finally:
-            self.reset_effect(91)  # Reset reverb to zero
-            print("Reverb reset to 0.")
-
-    def volume(self):
-        """Gradually increase volume effect."""
-        try:
-            for i in range(1, 127):
-                if self.effect_event.is_set():  # Check if the event is set to stop
-                    print("Volume stopped by event.")
-                    break
-                self.send_midi_message(1, 7, i)
-                print(f"Volume: {i}")
-                time.sleep(0.1)  # Reduced sleep time for faster response
-        finally:
-            self.reset_effect(7)  # Reset volume to zero
-            print("Volume reset to 0.")
-
-    def delay(self):
-        """Gradually increase delay effect."""
-        try:
-            for i in range(1, 127):
-                if self.effect_event.is_set():  # Check if the event is set to stop
-                    print("Delay stopped by event.")
-                    break
-                self.send_midi_message(1, 95, i)
-                print(f"Delay: {i}")
-                time.sleep(0.1)  # Reduced sleep time for faster response
-        finally:
-            self.reset_effect(95)  # Reset delay to zero
-            print("Delay reset to 0.")
-
     def start_effect(self, effect_name):
         """Start a new effect, stopping the current one if necessary."""
         self.stop_current_effect()  # Stop any running effect
 
-        if effect_name == "reverb":
-            self.active_effect = "reverb"
-            self.effect_thread = threading.Thread(target=self.reverb)
-        elif effect_name == "volume":
-            self.active_effect = "volume"
-            self.effect_thread = threading.Thread(target=self.volume)
-        elif effect_name == "delay":
-            self.active_effect = "delay"
-            self.effect_thread = threading.Thread(target=self.delay)
-        elif effect_name == "stop_current_effect":
-            self.reset_effect(91)  # Reset reverb to zero
-            self.reset_effect(7)   # Reset volume to zero
-            self.reset_effect(95)  # Reset delay to zero
+        if effect_name == "Third":
+            self.active_effect = "Third"
+            self.set_semitones(4)  # Set pitch shift to +4 semitones (major third)
+        elif effect_name == "Fifth":
+            self.active_effect = "Fifth"
+            self.set_semitones(7)  # Set pitch shift to +7 semitones (major fifth)
+        elif effect_name == "Tritone":
+            self.active_effect = "Tritone"
+            self.set_semitones(6)  # Set pitch shift to +6 semitones (tritone)
+        elif effect_name == "Octave":
+            self.active_effect = "Octave"
+            self.set_semitones(12) # Set pitch shift to +12 semitones (octave)
+        elif effect_name == "reset_pitch":
+            self.set_semitones(0)  # Reset pitch shift to 0 semitones
             return
-
-        if self.effect_thread:
-            self.effect_thread.start()

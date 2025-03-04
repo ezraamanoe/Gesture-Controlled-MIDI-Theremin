@@ -50,19 +50,20 @@ class HandTracker:
 
         # Only trigger effects on gesture changes
         if gesture != self.current_gesture:
+            # Stop the current effect if any
+            if self.midi.active_effect:
+                self.midi.start_effect("stop_current_effect")
+
+            # Start the new effect based on the gesture
             if gesture == "Open Palm":
-                self.midi.start_effect("stop_current_effect")
                 self.midi.start_effect("reverb")
-            elif gesture == "Fist":
-                self.midi.start_effect("stop_current_effect")
             elif gesture == "Point":
-                self.midi.start_effect("stop_current_effect")
                 self.midi.start_effect("volume")
             elif gesture == "Peace":
-                self.midi.start_effect("stop_curent_effect")
                 self.midi.start_effect("delay")
             elif gesture == "Rock":
-                self.midi.start_effect("stop_current_effect")  # Reset all effects for Rock gesture
+                # Reset all effects for Rock gesture
+                self.midi.start_effect("stop_current_effect")
             
             self.current_gesture = gesture
 

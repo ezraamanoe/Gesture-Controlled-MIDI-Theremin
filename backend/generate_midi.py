@@ -51,7 +51,7 @@ class GenerateMidi:
                     break
                 self.send_midi_message(1, 91, i)
                 print(f"Reverb: {i}")
-                time.sleep(0.1)  # Reduced sleep time for faster response
+                time.sleep(0.5)  # Reduced sleep time for faster response
         finally:
             self.reset_effect(91)  # Reset reverb to zero
             print("Reverb reset to 0.")
@@ -65,7 +65,7 @@ class GenerateMidi:
                     break
                 self.send_midi_message(1, 7, i)
                 print(f"Volume: {i}")
-                time.sleep(0.1)  # Reduced sleep time for faster response
+                time.sleep(0.5)  # Reduced sleep time for faster response
         finally:
             self.reset_effect(7)  # Reset volume to zero
             print("Volume reset to 0.")
@@ -79,7 +79,7 @@ class GenerateMidi:
                     break
                 self.send_midi_message(1, 95, i)
                 print(f"Delay: {i}")
-                time.sleep(0.1)  # Reduced sleep time for faster response
+                time.sleep(0.5)  # Reduced sleep time for faster response
         finally:
             self.reset_effect(95)  # Reset delay to zero
             print("Delay reset to 0.")
@@ -97,8 +97,10 @@ class GenerateMidi:
         elif effect_name == "delay":
             self.active_effect = "delay"
             self.effect_thread = threading.Thread(target=self.delay)
-        elif effect_name == "stop_reverb":
+        elif effect_name == "stop_current_effect":
             self.reset_effect(91)  # Reset reverb to zero
+            self.reset_effect(7)   # Reset volume to zero
+            self.reset_effect(95)  # Reset delay to zero
             return
 
         if self.effect_thread:

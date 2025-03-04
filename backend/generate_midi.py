@@ -45,13 +45,13 @@ class GenerateMidi:
     def reverb(self):
         """Gradually increase reverb effect."""
         try:
-            for i in range(1, 127, 5):
+            for i in range(1, 127):
                 if self.effect_event.is_set():  # Check if the event is set to stop
                     print("Reverb stopped by event.")
                     break
                 self.send_midi_message(1, 91, i)
                 print(f"Reverb: {i}")
-                time.sleep(0.5)  # Reduced sleep time for faster response
+                time.sleep(0.1)  # Reduced sleep time for faster response
         finally:
             self.reset_effect(91)  # Reset reverb to zero
             print("Reverb reset to 0.")
@@ -59,13 +59,13 @@ class GenerateMidi:
     def volume(self):
         """Gradually increase volume effect."""
         try:
-            for i in range(1, 127, 5):
+            for i in range(1, 127):
                 if self.effect_event.is_set():  # Check if the event is set to stop
                     print("Volume stopped by event.")
                     break
                 self.send_midi_message(1, 7, i)
                 print(f"Volume: {i}")
-                time.sleep(0.5)  # Reduced sleep time for faster response
+                time.sleep(0.1)  # Reduced sleep time for faster response
         finally:
             self.reset_effect(7)  # Reset volume to zero
             print("Volume reset to 0.")
@@ -73,13 +73,13 @@ class GenerateMidi:
     def delay(self):
         """Gradually increase delay effect."""
         try:
-            for i in range(1, 127, 5):
+            for i in range(1, 127):
                 if self.effect_event.is_set():  # Check if the event is set to stop
                     print("Delay stopped by event.")
                     break
                 self.send_midi_message(1, 95, i)
                 print(f"Delay: {i}")
-                time.sleep(0.5)  # Reduced sleep time for faster response
+                time.sleep(0.1)  # Reduced sleep time for faster response
         finally:
             self.reset_effect(95)  # Reset delay to zero
             print("Delay reset to 0.")

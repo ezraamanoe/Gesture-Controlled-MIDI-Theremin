@@ -75,13 +75,32 @@ class HandTracker:
         result = self.hands.process(rgb_frame)
 
         if result.multi_hand_landmarks:
-            for hand_landmarks in result.multi_hand_landmarks:
-                fingers = self.get_finger_states(hand_landmarks)
-                gesture = self.recognize_gesture(fingers)
+            hand_landmarks = result.multi_hand_landmarks[0]  # Take only the first detected hand
 
-                # Draw landmarks and display gesture text
-                self.mp_draw.draw_landmarks(frame, hand_landmarks, self.mp_hands.HAND_CONNECTIONS)
-                cv2.putText(frame, gesture, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+            # Get bounding box coordinates
+            h, w, _ = frame.shape
+            x_min, y_min = w, h
+            x_max, y_max = 0, 0
+
+            for landmark in hand_landmarks.landmark:
+                x, y = int(landmark.x * w), int(landmark.y * h)
+                x_min, y_min = min(x_min, x), min(y_min, y)
+                x_max, y_max = max(x_max, x), max(y_max, y)
+
+            # Expand the box slightly for better visibility
+            padding = 20
+            x_min = max(0, x_min - padding)
+            y_min = max(0, y_min - padding)
+            x_max = min(w, x_max + padding)
+            y_max = min(h, y_max + padding)
+
+            # Draw a single bounding box
+            cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), (255, 0, 0), 2)
+
+            # Place text above the box
+            fingers = self.get_finger_states(hand_landmarks)
+            gesture = self.recognize_gesture(fingers)
+            cv2.putText(frame, gesture, (x_min, y_min - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 0, 0), 2, cv2.LINE_AA)
 
         return frame
 

@@ -36,14 +36,20 @@ class GenerateMidi:
     def start_effect(self, effect_name):
 
         effect_map = {
-            "Major Third": 4,
-            "Major Fifth": 7,
+            "Stop": 0,
+            "Major Second": 2,
             "Minor Third": 3,
+            "Major Third": 4,
+            "Perfect Forth": 5,
             "Tritone": 6,
-            "Octave": 12,
-            "Stop": 0
+            "Perfect Fifth": 7,      
+            "Major Sixth": 9,
+            "Major Seventh": 11,
+            "Octave": 12 
         }
 
         if effect_name in effect_map:
             self.active_effect = effect_name
             self.set_semitones(effect_map[effect_name])
+        elif effect_name == "Note on":
+            self.midiout.send_message([0x90, 60, 112])  # Note on, middle C, velocity 112

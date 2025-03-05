@@ -7,7 +7,8 @@ class HandTracker:
         self.mp_hands = mp.solutions.hands
         self.hands = self.mp_hands.Hands(
             min_detection_confidence=min_detection_conf,
-            min_tracking_confidence=min_tracking_conf
+            min_tracking_confidence=min_tracking_conf,
+            max_num_hands=2
         )
         self.mp_draw = mp.solutions.drawing_utils
         self.midi = GenerateMidi()
@@ -40,21 +41,46 @@ class HandTracker:
         if fingers == [0, 0, 0, 0, 0]:
             gesture = "Stop"
             self.midi.start_effect("Stop")  # Reset to 0 semitones
-        elif fingers == [1, 1, 1, 1, 1]:
-            gesture = "Major Fifth"
-            self.midi.start_effect("Major Fifth") # +7 semitones (major fifth)
-        elif fingers == [0, 1, 1, 1, 0]:
-            gesture = "Major Third"
-            self.midi.start_effect("Major Third")  # +4 semitones (major third)
-        elif fingers == [0, 1, 1, 0, 0]:
+
+        elif fingers == [1, 0, 0, 0, 0]:
+            gesture = "Major Second"
+            self.midi.start_effect("Major Second") # +2 semitones(major second)
+
+        elif fingers == [1, 1, 0, 0, 0]:
             gesture = "Minor Third"
             self.midi.start_effect("Minor Third")  # +3 semitones (minor third)
-        elif fingers == [0, 1, 0, 0, 0]:
-            gesture = "Octave"
-            self.midi.start_effect("Octave") # +12 semitones (octave)
+
+        elif fingers == [1, 1, 1, 0, 0]:
+            gesture = "Major Third"
+            self.midi.start_effect("Major Third")  # +4 semitones (major third)
+
+        elif fingers == [1, 1, 1, 1, 0]:
+            gesture = "Perfect Forth"
+            self.midi.start_effect("Perfect Forth")  # +5 semitones (perfect forth)
+
+        elif fingers == [1, 1, 1, 1, 1]:
+            gesture = "Perfect Fifth"
+            self.midi.start_effect("Perfect Fifth") # +7 semitones (perfect fifth)
+
         elif fingers == [0, 1, 0, 0, 1]:
             gesture = "Tritone"
             self.midi.start_effect("Tritone") # +6 semitones (tritone)
+        
+        elif fingers == [0, 0, 0, 0, 1]:
+            gesture = "Major Sixth"
+            self.midi.start_effect("Major Sixth")  # +9 semitones (major sixth)
+
+        elif fingers == [0, 0, 0, 1, 1]:
+            gesture = "Major Seventh"
+            self.midi.start_effect("Major Seventh")  # +11 semitones (major seventh)
+
+        elif fingers == [0, 0, 1, 1, 1]:
+            gesture = "Octave"
+            self.midi.start_effect("Octave")
+
+        elif fingers == [1, 0, 0, 0, 1]:
+            gesture = "Note on"
+            self.midi.start_effect("Note on")  # Play middle C
 
         return gesture
 

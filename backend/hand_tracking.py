@@ -39,13 +39,16 @@ class HandTracker:
         gesture = "Unknown"
         if fingers == [0, 0, 0, 0, 0]:
             gesture = "Stop"
-            self.midi.start_effect("reset_pitch")  # Reset to 0 semitones
+            self.midi.start_effect("Stop")  # Reset to 0 semitones
         elif fingers == [1, 1, 1, 1, 1]:
-            gesture = "Five"
-            self.midi.start_effect("Fifth") # +7 semitones (major fifth)
+            gesture = "Major Fifth"
+            self.midi.start_effect("Major Fifth") # +7 semitones (major fifth)
         elif fingers == [0, 1, 1, 1, 0]:
-            gesture = "Three"
-            self.midi.start_effect("Third")  # +4 semitones (major third)
+            gesture = "Major Third"
+            self.midi.start_effect("Major Third")  # +4 semitones (major third)
+        elif fingers == [0, 1, 1, 0, 0]:
+            gesture = "Minor Third"
+            self.midi.start_effect("Minor Third")  # +3 semitones (minor third)
         elif fingers == [0, 1, 0, 0, 0]:
             gesture = "Octave"
             self.midi.start_effect("Octave") # +12 semitones (octave)

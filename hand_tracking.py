@@ -78,9 +78,13 @@ class HandTracker:
             gesture = "Octave"
             self.midi.start_effect("Octave")
 
-        elif fingers == [1, 0, 0, 0, 1]:
+        elif fingers == [1, 1, 0, 0, 1]:
             gesture = "Note on"
             self.midi.start_effect("Note on")  # Play middle C
+
+        elif fingers == [1, 0, 0, 0, 1]:
+            gesture = "Note off"
+            self.midi.start_effect("Note off") # Stop playing middle C
 
         return gesture
 

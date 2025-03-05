@@ -53,3 +53,5 @@ class GenerateMidi:
             self.set_semitones(effect_map[effect_name])
         elif effect_name == "Note on":
             self.midiout.send_message([0x90, 60, 112])  # Note on, middle C, velocity 112
+        elif effect_name == "Note off":
+            self.midiout.send_message([0x80, 60, 0])  # Note off, middle C

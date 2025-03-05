@@ -26,3 +26,6 @@ This project is a real-time gesture-controlled MIDI system designed to emulate t
     <dd>- Maps semitone values to MIDI CC values using a linear scaling formula.</dd>
   </dl>
 </html>
+
+https://github.com/user-attachments/assets/c57af271-6a51-46af-ba1f-fce7b056275d
+

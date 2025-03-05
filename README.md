@@ -34,7 +34,27 @@ This project is a real-time gesture-controlled MIDI system designed to emulate t
     - Maps semitone values to MIDI CC values using a linear scaling formula.</dd>
   </dl>
 
-## Ges
+## Gestures and Mappings
+|Gestures|Interval|MIDI Effect|
+|---|---|---|
+|Fist|Stop|0 semitones (Reset)|
+|Thumb|Major 2nd|+2 semitones|
+|Thumb and Index|Minor 3rd|+3 semitones|
+|Thumb, Index, and Middle|Major 3rd|+4 semitones|
+|Thumb, Index, Middle, Ring|Perfect 4th|+5 semitones|
+|Index and Pinky|Tritone|+6 semitones|
+|Open Palm|Perfect 5th|+7 semitones|
+|Index|Major 6th|+9 semitones|
+|Index and Middle|Major 7th|+11 semitones|
+|Index, Middle, and Ring|Octave|+12 semitones|
+
+|Gesture|Action|
+|---|---|
+|Thumb and Pinky|Play Middle C|
+|Thumb, Index, and Pinky|Stop playing Middle C|
+
+
+
 
 ## Run the app
 <dl>

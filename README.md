@@ -88,7 +88,7 @@ $ pip install -r requirements.txt
 For MacOS, open Audio MIDI Setup > Window > Show MIDI Studio.
 <br/>
 <br/>
-Double click on IAC Driver and select 'Device is online.
+Double click on IAC Driver and select 'Device is online'.
 <br/>
 <br/>
 Add ports as needed using the + button.

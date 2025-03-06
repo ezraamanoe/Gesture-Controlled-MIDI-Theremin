@@ -66,15 +66,15 @@ class HandTracker:
             gesture = "Tritone"
             self.midi.start_effect("Tritone") # +6 semitones (tritone)
         
-        elif fingers == [0, 0, 0, 0, 1]:
+        elif fingers == [0, 1, 0, 0, 0]:
             gesture = "Major Sixth"
             self.midi.start_effect("Major Sixth")  # +9 semitones (major sixth)
 
-        elif fingers == [0, 0, 0, 1, 1]:
+        elif fingers == [0, 1, 1, 0, 0]:
             gesture = "Major Seventh"
             self.midi.start_effect("Major Seventh")  # +11 semitones (major seventh)
 
-        elif fingers == [0, 0, 1, 1, 1]:
+        elif fingers == [0, 1, 1, 1, 0]:
             gesture = "Octave"
             self.midi.start_effect("Octave")
 
